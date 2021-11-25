@@ -12,7 +12,53 @@ from youbot_zombie import *
 MAX_SPEED = 14.81
 TIME_STEP = 64
 
-def getBerryPosition(camera):
+
+def getCameraRGBValues(camera):
+    image = camera.getImage()
+    width = camera.getWidth()
+    height = camera.getHeight()
+    
+    for y in range(height):
+        for x in range(width):
+            r = Camera.imageGetRed(image, width, x, y)
+            g = Camera.imageGetGreen(image, width, x, y)
+            b = Camera.imageGetBlue(image, width, x, y)
+            
+            # print("x=" + str(x) + " y=" + str(y))
+            print("red=" + str(r) + " green=" + str(g) + " blue=" + str(b))
+    
+def getStumpPosition(camera):
+    image = camera.getImage()
+    width = camera.getWidth()
+    height = camera.getHeight()
+    image_mid = width // 2
+    
+    first = False
+    second = False
+    x1 = -1
+    x2 = -1
+    
+    for y in range(height):
+        for x in range(width):
+            r = Camera.imageGetRed(image, width, x, y)
+            g = Camera.imageGetGreen(image, width, x, y)
+            b = Camera.imageGetBlue(image, width, x, y)
+            
+            if r < 20 and g < 20 and b < 20:
+                if not first:
+                    x1 = x
+                    first = True
+                else:
+                    x2 = x
+                    second = True
+            elif first and second:
+                break
+            else:
+                continue
+                   
+    return (x1 + x2) // 2
+
+def getRedBerryPosition(camera):
     image = camera.getImage()
     width = camera.getWidth()
     height = camera.getHeight()
@@ -40,28 +86,53 @@ def getBerryPosition(camera):
                 break
             else:
                 continue
-                
-    
-    # for x in range(width):
-    #     for y in range(height):
-    #         r = Camera.imageGetRed(image, width, x, y)
-    #         g = Camera.imageGetGreen(image, width, x, y)
-    #         b = Camera.imageGetBlue(image, width, x, y)
-
-    #         if r > 200 and b < 80:
-    #             if not first:
-    #                 x1 = x
-    #                 first = True
-    #             else:
-    #                 x2 = x
-    #                 second = True
-        
-                    
+                   
     return (x1 + x2) // 2
 
-def driveToBerry(fr, fl, br, bl, camera):
+
+def driveToStump(fr, fl, br, bl, camera):
+    image_mid = camera.getWidth() // 2
+    stump_position = getStumpPosition(camera)
+    
+    difference = abs(image_mid - stump_position)
+    gain = difference / image_mid
+    
+    fr.setVelocity(.5 * MAX_SPEED)
+    fl.setVelocity(.5 * MAX_SPEED)
+    br.setVelocity(.5 * MAX_SPEED)
+    bl.setVelocity(.5 * MAX_SPEED)
+    
+    THRESHOLD = 2
+    
+    if stump_position == -1:
+        print("stump not found")
+        fr.setVelocity(.5 * MAX_SPEED)
+        fl.setVelocity(.5 * MAX_SPEED)
+        br.setVelocity(.5 * MAX_SPEED)
+        bl.setVelocity(.5 * MAX_SPEED)
+    elif image_mid - THRESHOLD < stump_position < image_mid + THRESHOLD:
+        print("stump aligned go straight")
+        fr.setVelocity(.5 * MAX_SPEED)
+        fl.setVelocity(.5 * MAX_SPEED)
+        br.setVelocity(.5 * MAX_SPEED)
+        bl.setVelocity(.5 * MAX_SPEED)
+    elif stump_position < image_mid:
+        print("stump on the left")
+        fr.setVelocity(.5 * MAX_SPEED + gain * MAX_SPEED)
+        fl.setVelocity(.5 * MAX_SPEED)
+        br.setVelocity(.5 * MAX_SPEED + gain * MAX_SPEED)
+        bl.setVelocity(.5 * MAX_SPEED)
+    else:
+        print("stump on the right")
+        fr.setVelocity(.5 * MAX_SPEED)
+        fl.setVelocity(.5 * MAX_SPEED + gain * MAX_SPEED)
+        br.setVelocity(.5 * MAX_SPEED)
+        bl.setVelocity(.5 * MAX_SPEED + gain * MAX_SPEED)
+    
+
+def driveToRedBerry(fr, fl, br, bl, camera):
     image_mid =  camera.getWidth() // 2
-    berry_position = getBerryPosition(camera)
+    berry_position = getRedBerryPosition(camera)
     
     difference = abs(image_mid - berry_position)
     gain = difference / image_mid
@@ -194,11 +265,9 @@ def main():
     # lidar.enable(timestep)
 
     while robot.step(TIME_STEP) != -1:
-        driveToBerry(fr, fl, br, bl, camera1)
-        
-        # print("x=" + str(x) + " y=" + str(y))
-        # print("first=" + str(x1) + " second=" + str(x2))
-        # print("red=" + str(r) + " green=" + str(g) + " blue=" + str(b))
+        # driveToRedBerry(fr, fl, br, bl, camera1)
+        driveToStump(fr, fl, br, bl, camera1)
+        # getCameraRGBValues(camera1)
 
            
 
