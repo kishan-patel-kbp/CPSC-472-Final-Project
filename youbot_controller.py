@@ -149,10 +149,12 @@ def approaching_wall(world_pixel_info):
                 return True
     return False
 
-def get_berry_world_info(camera, world_pixel_info):
+def get_berry_world_info(camera):
     image = camera.getImage()
     width = camera.getWidth()
     height = camera.getHeight()
+    
+    world_pixel_info = [['0']*width for _ in range(height)]
     
     
     berries_pixels_out = [] 
@@ -430,7 +432,7 @@ def main():
         
      #------------------CHANGE CODE BELOW HERE ONLY--------------------------   
 
-        world_pixel_info = get_berry_world_info(camera1, world_pixel_info)
+        world_pixel_info = get_berry_world_info(camera1)
         drive_to_berry(fr, fl, br, bl, camera1, world_pixel_info)
         
         if i==300:
