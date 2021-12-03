@@ -21,6 +21,13 @@ COLOR_DIST_THRESH = 300
 
 BERRY_COLORS = {'r', 'o', 'y', 'p'}
 
+
+#each berry has a .25 probability of having a certain main effect
+#each berry has a .75 probability of having a certain secondary effect
+
+berry_effects = {'r':[], 'o':[], 'y':[], 'p':[]}
+
+
 BERRIES_PIXELS = {
     (212,140,95): ('orange', 0),
     (195,125,86): ('orange', 1),
