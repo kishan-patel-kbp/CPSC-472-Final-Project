@@ -28,22 +28,6 @@ COLOR_DIST_THRESH = 300
 
 BERRY_COLORS = {'r', 'o', 'y', 'p'}
 
-<<<<<<< HEAD
-#each berry has a .25 probability of having a certain main effect
-#each berry has a .75 probability of having a certain secondary effect
-
-=======
-STUMP_PIXELS = {
-    (10,10,14),
-    (10,10,13),
-    (26,26,28),
-    (10,11,14),
-    (25,26,27),
-    (27,28,30),
-    (11,12,16)
-}
->>>>>>> c7f2c81ac84e166d7447eb620b193dddea477edf
-
 BERRIES_PIXELS = {
     (212,140,95): ('orange', 0),
     (195,125,86): ('orange', 1),
@@ -349,6 +333,7 @@ def get_closest_stump(all_stump_metadata):
 def drive_to_berry(fr, fl, br, bl, camera, world_pixel_info):
     image_mid =  camera.getWidth() // 2
     all_berry_metadata = get_berry_metadata(camera, world_pixel_info)
+    print("all_berry_meta_Data", all_berry_metadata)
     closest = get_closest_berry(all_berry_metadata)
     
     berry_center_position = -1
