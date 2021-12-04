@@ -391,7 +391,6 @@ def drive_to_berry(fr, fl, br, bl, camera, world_pixel_info):
         br.setVelocity(.5 * MAX_SPEED)
         bl.setVelocity(.5 * MAX_SPEED + gain * MAX_SPEED)
         
-<<<<<<< HEAD
 
 def update_berry_probabilities(plus_40_energy_berry, minus_20_energy_berry, plus_20_health_berry, armor_berry, berry_history):
 
@@ -447,7 +446,6 @@ def detect_berry(robot_info, last_timestep_robot_info, color_last_pursued, berry
     return return_berry_history
 
                 
-=======
 AT_STUMP = "at stump"
 NOT_AT_STUMP = "not at stump"
 def drive_to_stump(fr, fl, br, bl, camera, stump_pixel_info):
@@ -515,7 +513,6 @@ def strafe_right(fr, fl, br, bl):
     fl.setVelocity(1 * MAX_SPEED)
     br.setVelocity(1 * MAX_SPEED)
     bl.setVelocity(-1 * MAX_SPEED) 
->>>>>>> c7f2c81ac84e166d7447eb620b193dddea477edf
     
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
 
