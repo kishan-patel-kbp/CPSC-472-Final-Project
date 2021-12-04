@@ -21,11 +21,8 @@ COLOR_DIST_THRESH = 300
 
 BERRY_COLORS = {'r', 'o', 'y', 'p'}
 
-
 #each berry has a .25 probability of having a certain main effect
 #each berry has a .75 probability of having a certain secondary effect
-
-berry_effects = {'r':[], 'o':[], 'y':[], 'p':[]}
 
 
 BERRIES_PIXELS = {
@@ -312,6 +309,61 @@ def drive_to_berry(fr, fl, br, bl, camera, world_pixel_info):
         fl.setVelocity(.5 * MAX_SPEED + gain * MAX_SPEED)
         br.setVelocity(.5 * MAX_SPEED)
         bl.setVelocity(.5 * MAX_SPEED + gain * MAX_SPEED)
+        
+
+def update_berry_probabilities(plus_40_energy_berry, minus_20_energy_berry, plus_20_health_berry, armor_berry, berry_history):
+
+    berry_colors = ['r', 'o', 'y', 'p']
+
+    for index, history in enumerate(berry_history):
+        values = history.values()
+        total_sum = sum(values)
+        if history['plus_40_energy'] > 0:
+            if history['plus_40_energy'] / total_sum > .5:
+                plus_40_energy_berry = berry_colors[index]
+        if history['minus_20_energy'] > 0:
+            if history['minus_20_energy'] / total_sum > .5:
+                minus_20_energy_berry = berry_colors[index]
+        if history['plus_20_health'] > 0:
+            if history['plus_20_health'] / total_sum > .5:
+                plus_20_health_berry = berry_colors[index]
+        if history['armor'] > 0:
+            if history['armor'] / total_sum > .5:
+                armor_berry = berry_colors[index]
+        
+    
+    return plus_40_energy_berry, minus_20_energy_berry, plus_20_health_berry, armor_berry
+
+
+
+def detect_berry(robot_info, last_timestep_robot_info, color_last_pursued, berry_history):
+    red_berry_history, orange_berry_history, yellow_berry_history, pink_berry_history = berry_history[0], berry_history[1], berry_history[2], berry_history[3]
+    health, energy, armor = robot_info[0], robot_info[1], robot_info[2]
+    last_timestep_health, last_timestep_energy, last_timestep_armor = last_timestep_robot_info[0], last_timestep_robot_info[1], last_timestep_robot_info[2]
+    consumed_berry = False #checks to see if a berry was consumed by checking differences in health, energy, armor
+    last_pursued_berry_history = None
+    if color_last_pursued == 'r':
+        last_pursued_berry_history = red_berry_history
+    elif color_last_pursued == 'o':
+        last_pursued_berry_history = orange_berry_history
+    elif color_last_pursued == 'y':
+        last_pursued_berry_history = yellow_berry_history
+    elif color_last_pursued == 'p':
+        last_pursued_berry_history = pink_berry_history
+
+    if health >= last_timestep_health: #low bar because you might lose health from a nearby zombie, can change this
+        consumed_berry = True
+        last_pursued_berry_history['plus_20_health'] += 1
+    elif energy >= last_timestep_energy:
+        consumed_berry = True
+        last_pursued_berry_history['plus_40_energy'] += 1
+    elif (energy - last_timestep_energy) <= -15: 
+        consumed_berry = True
+        last_pursued_berry_history['minus_20_energy'] += 1
+    # not sure about how to detect if armor changes yet
+    return_berry_history = [red_berry_history, orange_berry_history, yellow_berry_history, pink_berry_history]
+    return return_berry_history
+
                 
     
 #------------------CHANGE CODE ABOVE HERE ONLY--------------------------
@@ -324,6 +376,20 @@ def main():
     
     #health, energy, armour in that order 
     robot_info = [100,100,0]
+    last_timestep_robot_info = [100,100,0]
+    plus_40_energy_berry = None
+    minus_20_energy_berry = None
+    plus_20_health_berry = None
+    armor_berry = None
+
+    red_berry_history = {'plus_40_energy':0, 'minus_20_energy': 0, 'plus_20_health': 0, 'armor': 0}
+    orange_berry_history = {'plus_40_energy':0, 'minus_20_energy': 0, 'plus_20_health': 0, 'armor': 0}
+    yellow_berry_history = {'plus_40_energy':0, 'minus_20_energy': 0, 'plus_20_health': 0, 'armor': 0}
+    pink_berry_history = {'plus_40_energy':0, 'minus_20_energy': 0, 'plus_20_health': 0, 'armor': 0}
+
+
+    berry_history = [red_berry_history, orange_berry_history, yellow_berry_history, pink_berry_history]
+    
     passive_wait(0.1, robot, timestep)
     pc = 0
     timer = 0
@@ -438,10 +504,13 @@ def main():
         timer += 1
         
      #------------------CHANGE CODE BELOW HERE ONLY--------------------------   
+        color_last_pursued = 'r' #need to change this hardcoding it for now
+        plus_40_energy_berry, minus_20_energy_berry, plus_20_health_berry, armor_berry = update_berry_probabilities(plus_40_energy_berry, minus_20_energy_berry, plus_20_health_berry, armor_berry, berry_history)
+
+        berry_history = detect_berry(robot_info, last_timestep_robot_info, color_last_pursued, berry_history)
 
         world_pixel_info = get_berry_world_info(camera1)
         drive_to_berry(fr, fl, br, bl, camera1, world_pixel_info)
-        
         if i==300:
             i = 0
         
