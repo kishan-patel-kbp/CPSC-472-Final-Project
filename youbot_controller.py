@@ -178,7 +178,7 @@ def get_berry_world_info(camera):
                 if dist([r,g,b], color) <= COLOR_DIST_THRESH:
                     nxt_pixel = str_to_rgb[BERRIES_PIXELS[color][0]]
                     color_last_pursued = BERRIES_PIXELS[color][0]
-                    print("color berry being pursued is", BERRIES_PIXELS[color][0])
+                    # print("color berry being pursued is", BERRIES_PIXELS[color][0])
                     world_pixel_info[y][x] = BERRIES_PIXELS[color][0][0]
                     break
     return world_pixel_info, color_last_pursued
@@ -336,6 +336,7 @@ def get_closest_stump(all_stump_metadata):
 def drive_to_berry(fr, fl, br, bl, camera, world_pixel_info, berry_colors_to_find, color_last_pursued):
     berry_colors_to_find_hash = {}
     for berry_color in berry_colors_to_find:
+        print("trying to find these berry colors", berry_color)
         berry_colors_to_find_hash[berry_color] = 1
 
 
@@ -535,8 +536,8 @@ def main():
     timestep = int(robot.getBasicTimeStep())
     
     #health, energy, armour in that order 
-    # robot_info = [30,30,0] #use this for testing
-    robot_info = [100,100,0]
+    robot_info = [30,30,0] #use this for testing
+    # robot_info = [100,100,0]
 
     passive_wait(0.1, robot, timestep)
     pc = 0
@@ -727,8 +728,9 @@ def main():
         
         
         world_pixel_info, color_last_pursued = get_berry_world_info(camera1)
-
-        if berry_find_state(robot_info) == 'find_health_or_energy':
+        berry_search_state = berry_find_state(robot_info)
+        if berry_search_state == 'find_health_or_find_energy':
+            print("need health and energy")
             if plus_40_energy_berry == None and  plus_20_health_berry == None:
                 berry_colors_to_find = ['red', 'orange', 'yellow', 'pink']
             elif plus_40_energy_berry and plus_20_health_berry :
@@ -739,27 +741,20 @@ def main():
                 berry_colors_to_find = [plus_40_energy_berry]
             drive_to_berry(fr, fl, br, bl, camera1, world_pixel_info, berry_colors_to_find, color_last_pursued)
 
-        elif berry_find_state(robot_info) == 'only_find_health':
+        elif berry_search_state == 'only_find_health':
             if plus_20_health_berry == None:
                 berry_colors_to_find = ['red', 'orange', 'yellow', 'pink']
             elif plus_20_health_berry:
                 berry_colors_to_find = [plus_20_health_berry]
             drive_to_berry(fr, fl, br, bl, camera1, world_pixel_info, berry_colors_to_find, color_last_pursued)
-        elif berry_find_state(robot_info) == 'only_find_energy':
+        elif berry_search_state == 'only_find_energy':
             if plus_40_energy_berry == None:
                 berry_colors_to_find = ['red', 'orange', 'yellow', 'pink']
             elif plus_40_energy_berry:
                 berry_colors_to_find = [plus_40_energy_berry]
             drive_to_berry(fr, fl, br, bl, camera1, world_pixel_info, berry_colors_to_find, color_last_pursued)
-
-            
-
-
-
-
         
 
-        
         if i==300:
             i = 0
         
