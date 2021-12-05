@@ -333,7 +333,6 @@ def get_closest_stump(all_stump_metadata):
 def drive_to_berry(fr, fl, br, bl, camera, world_pixel_info):
     image_mid =  camera.getWidth() // 2
     all_berry_metadata = get_berry_metadata(camera, world_pixel_info)
-    print("all_berry_meta_Data", all_berry_metadata)
     closest = get_closest_berry(all_berry_metadata)
     
     berry_center_position = -1
@@ -429,6 +428,8 @@ def detect_berry(robot_info, last_timestep_robot_info, color_last_pursued, berry
     # not sure about how to detect if armor changes yet
     return_berry_history = [red_berry_history, orange_berry_history, yellow_berry_history, pink_berry_history]
     return return_berry_history
+
+
 
                 
 AT_STUMP = "at stump"
@@ -658,8 +659,6 @@ def main():
 
         berry_history = detect_berry(robot_info, last_timestep_robot_info, color_last_pursued, berry_history)
 
-        world_pixel_info = get_berry_world_info(camera1)
-        drive_to_berry(fr, fl, br, bl, camera1, world_pixel_info)
      
         # get_stump_metadata(camera1)
         
