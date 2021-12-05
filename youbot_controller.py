@@ -536,7 +536,8 @@ def main():
     timestep = int(robot.getBasicTimeStep())
     
     #health, energy, armour in that order 
-    robot_info = [30,30,0]
+    # robot_info = [30,30,0] #use this for testing
+    robot_info = [100,100,0]
 
     passive_wait(0.1, robot, timestep)
     pc = 0
