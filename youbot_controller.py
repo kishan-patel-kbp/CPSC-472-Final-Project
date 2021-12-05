@@ -445,10 +445,8 @@ def detect_berry_consumption(robot_info, last_timestep_robot_info, color_last_pu
         last_pursued_berry_history = pink_berry_history
 
     if energy > last_timestep_energy:
-        consumed_berry = True
         last_pursued_berry_history['plus_40_energy'] += 1
     elif (energy - last_timestep_energy) <= -15: 
-        consumed_berry = True
         last_pursued_berry_history['minus_20_energy'] += 1
     elif armor > last_timestep_armor: # not sure about how to detect if armor changes yet
         last_pursued_berry_history['armor'] += 1
