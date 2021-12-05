@@ -373,11 +373,11 @@ def drive_to_berry(fr, fl, br, bl, camera, world_pixel_info, berry_colors_to_fin
         # bl.setVelocity(.5 * MAX_SPEED)
     elif image_mid - THRESHOLD < berry_center_position < image_mid + THRESHOLD:
         print("berry aligned go straight")
-        base_forwards([fr, fl, br, bl])
-        # fr.setVelocity(.5 * MAX_SPEED)
-        # fl.setVelocity(.5 * MAX_SPEED)
-        # br.setVelocity(.5 * MAX_SPEED)
-        # bl.setVelocity(.5 * MAX_SPEED)
+        # base_forwards([fr, fl, br, bl])
+        fr.setVelocity(.5 * MAX_SPEED)
+        fl.setVelocity(.5 * MAX_SPEED)
+        br.setVelocity(.5 * MAX_SPEED)
+        bl.setVelocity(.5 * MAX_SPEED)
     elif berry_center_position < image_mid:
         print("berry on the left")
         fr.setVelocity(.5 * MAX_SPEED + gain * MAX_SPEED)
