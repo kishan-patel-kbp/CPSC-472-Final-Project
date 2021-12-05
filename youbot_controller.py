@@ -728,9 +728,7 @@ def main():
         
         world_pixel_info, color_last_pursued = get_berry_world_info(camera1)
 
-        if berry_find_state(robot_info)!= None:
-            drive_to_berry(fr, fl, br, bl, camera1, world_pixel_info, berry_colors_to_find, color_last_pursued)
-        elif berry_find_state(robot_info) == 'find_health_or_energy':
+        if berry_find_state(robot_info) == 'find_health_or_energy':
             if plus_40_energy_berry == None and  plus_20_health_berry == None:
                 berry_colors_to_find = ['red', 'orange', 'yellow', 'pink']
             elif plus_40_energy_berry and plus_20_health_berry :
