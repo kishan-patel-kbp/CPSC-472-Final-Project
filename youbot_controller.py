@@ -336,16 +336,13 @@ def get_closest_stump(all_stump_metadata):
 def drive_to_berry(fr, fl, br, bl, camera, world_pixel_info, berry_colors_to_find, color_last_pursued):
     berry_colors_to_find_hash = {}
     for berry_color in berry_colors_to_find:
-        print("trying to find these berry colors", berry_color)
+        # print("trying to find these berry colors", berry_color)
         berry_colors_to_find_hash[berry_color] = 1
 
 
     image_mid =  camera.getWidth() // 2
     all_berry_metadata = get_berry_metadata(camera, world_pixel_info)
     closest = get_closest_berry(all_berry_metadata)
-    
-
-    
 
     berry_center_position = -1
     if closest:
@@ -407,7 +404,7 @@ def berry_find_state(robot_info):
     
 def update_berry_probabilities(plus_40_energy_berry, minus_20_energy_berry, plus_20_health_berry, armor_berry, berry_history):
 
-    berry_colors = ['r', 'o', 'y', 'p']
+    berry_colors = ['red', 'orange', 'yellow', 'pink']
 
     for index, history in enumerate(berry_history):
         values = history.values()
@@ -425,12 +422,12 @@ def update_berry_probabilities(plus_40_energy_berry, minus_20_energy_berry, plus
             if history['armor'] / total_sum > .5:
                 armor_berry = berry_colors[index]
         
-    
     return plus_40_energy_berry, minus_20_energy_berry, plus_20_health_berry, armor_berry
 
 
 
 def detect_berry_consumption(robot_info, last_timestep_robot_info, color_last_pursued, berry_history):
+    print("detecting berry consumption")
     red_berry_history, orange_berry_history, yellow_berry_history, pink_berry_history = berry_history[0], berry_history[1], berry_history[2], berry_history[3]
     health, energy, armor = robot_info[0], robot_info[1], robot_info[2]
     last_timestep_health, last_timestep_energy, last_timestep_armor = last_timestep_robot_info[0], last_timestep_robot_info[1], last_timestep_robot_info[2]
@@ -444,18 +441,26 @@ def detect_berry_consumption(robot_info, last_timestep_robot_info, color_last_pu
         last_pursued_berry_history = yellow_berry_history
     elif color_last_pursued == 'pink':
         last_pursued_berry_history = pink_berry_history
-
+    # print("energy is now", energy)
+    # print("energy from last timestep", energy)
+    # print("armor is now", armor)
+    # print("armor from last timestep", last_timestep_armor)
     if energy > last_timestep_energy:
+        # print("just consumed 40 energy berry")
         last_pursued_berry_history['plus_40_energy'] += 1
     elif (energy - last_timestep_energy) <= -15: 
+        # print("just consumed -20 energy berry")
         last_pursued_berry_history['minus_20_energy'] += 1
     elif armor > last_timestep_armor: # not sure about how to detect if armor changes yet
+        # print("just consumed armor berry")
         last_pursued_berry_history['armor'] += 1
     elif health > last_timestep_health: #might checks equal health in the case that you ate a berry while at full health
+        # print("just consumed +20 health berry")
         last_pursued_berry_history['plus_20_health'] += 1
-
-    return [red_berry_history, orange_berry_history, yellow_berry_history, pink_berry_history]
-
+    last_timestep_robot_info_new = []
+    for element in robot_info:
+        last_timestep_robot_info_new.append(element)
+    return last_timestep_robot_info_new, [red_berry_history, orange_berry_history, yellow_berry_history, pink_berry_history]
 
 
                 
@@ -637,11 +642,11 @@ def main():
     arm_down_count = 3
     knock_berry_count = 5
 
-    #intialize variables here
 
     #initialize variables here
+    last_timestep_robot_info = [30, 30, 0] 
+
     berry_colors_to_find = []
-    last_timestep_robot_info = robot_info
     plus_40_energy_berry = None
     minus_20_energy_berry = None
     plus_20_health_berry = None
@@ -690,8 +695,11 @@ def main():
         
      #------------------CHANGE CODE BELOW HERE ONLY--------------------------   
         plus_40_energy_berry, minus_20_energy_berry, plus_20_health_berry, armor_berry = update_berry_probabilities(plus_40_energy_berry, minus_20_energy_berry, plus_20_health_berry, armor_berry, berry_history)
-
-        berry_history = detect_berry_consumption(robot_info, last_timestep_robot_info, color_last_pursued, berry_history)
+        print("plus_40_energy_berry, minus_20_energy_berry, plus_20_health_berry, armor_berry are ", [plus_40_energy_berry, minus_20_energy_berry, plus_20_health_berry, armor_berry])
+        print("robot info", robot_info)
+        print("last timestep robot info", last_timestep_robot_info)
+        print("timer", timer)
+        last_timestep_robot_info, berry_history = detect_berry_consumption(robot_info, last_timestep_robot_info, color_last_pursued, berry_history)
      
         # get_stump_metadata(camera1)
         
